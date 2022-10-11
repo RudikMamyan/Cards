@@ -1,0 +1,9 @@
+.sidebar {
+    grid-area: 1 / 2 / 4 / 2;
+    border-color: black;
+    border-style: solid;
+    border-width: 1px 1px 1px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

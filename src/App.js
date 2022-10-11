@@ -1,25 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import { useCallback, useEffect, useState } from "react";
 
-function App() {
+import { Header, Footer, Sidebar, Button, Content, Card } from "./components";
+import Layout from "./layout";
+import { sortHandler } from "./utils";
+
+export default function App() {
+  const [sort, setSort] = useState(false);
+  const [cards, setCards] = useState(
+    JSON.parse(localStorage.getItem("cards")) || []
+  );
+
+  const saveData = useCallback(() => {
+    localStorage.setItem("cards", JSON.stringify(cards));
+  }, [cards]);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", saveData);
+    return () => window.removeEventListener("beforeunload", saveData);
+  }, [saveData]);
+
+  const addCard = () =>
+    setCards((prev) => [...prev, Math.ceil(Math.random() * 1000)]);
+
+  const sortCards = () => setSort((prev) => !prev);
+
+  const removeCard = (number) => {
+    setCards((prev) => prev.filter((num) => num !== number));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Layout>
+      <Header>
+        <Button onClick={addCard}>add card</Button>
+        <Button onClick={sortCards}>sort cards</Button>
+      </Header>
+      <Content>
+        {sortHandler(cards, sort).map((number) => (
+          <Card key={number} remove={() => removeCard(number)}>
+            {number}
+          </Card>
+        ))}
+      </Content>
+      <Sidebar />
+      <Footer />
+    </Layout>
   );
 }
-
-export default App;
